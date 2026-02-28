@@ -19,11 +19,11 @@
 
 \section{From Ideology to Structure}
 
-In January 2021, the House of Representatives convened for the 117th Congress with a narrow Democratic majority. When Marjorie Taylor Greene was stripped of her committee assignments in February, the vote split 230--199, with only 11 Republicans joining Democrats. The following year, when the 118th Congress opened, it took fifteen ballots to elect Kevin McCarthy Speaker---the most contentious Speaker election since 1855. Twenty Republicans withheld their support, holding out for procedural concessions that would reshape how the House operated for the next two years.
+In January 2021, the House of Representatives convened for the 117th Congress with a narrow Democratic majority. When Marjorie Taylor Greene was stripped of her committee assignments in February, the vote split 230--199, with only 11 Republicans joining Democrats. The following year, when the 118th Congress opened, it took fifteen ballots to elect Kevin McCarthy Speaker,the most contentious Speaker election since 1855. Twenty Republicans withheld their support, holding out for procedural concessions that would reshape how the House operated for the next two years.
 
-These episodes illustrate something that standard ideological measures miss. DW-NOMINATE places every legislator on a left-right spectrum and does it well \citep{poole1985}. But Greene and the McCarthy holdouts were not distinguished primarily by their ideological positions---many holdouts had DW-NOMINATE scores indistinguishable from Republicans who voted for McCarthy on the first ballot. What distinguished them was their \textit{structural position}: their voting patterns created unique signatures that the network topology amplified. Remove them, and the legislative landscape shifts in ways that ideological distance cannot predict.
+These episodes illustrate something that standard ideological measures miss. DW-NOMINATE places every legislator on a left-right spectrum and does it well \citep{poole1985}. But Greene and the McCarthy holdouts were not distinguished primarily by their ideological positions,many holdouts had DW-NOMINATE scores indistinguishable from Republicans who voted for McCarthy on the first ballot. What distinguished them was their \textit{structural position}: their voting patterns created unique signatures that the network topology amplified. Remove them, and the legislative landscape shifts in ways that ideological distance cannot predict.
 
-We develop a framework for measuring this structural contribution. Rather than placing legislators on a line, we treat the Member-Vote incidence matrix as a bipartite network and apply \textbf{SVD Incidence Centrality} \citep{franco2026}. The key operation is a $1/\sigma^2$ weighting on singular values that emphasizes low-frequency modes---the Fiedler vector and near-Fiedler modes that encode the global topology of polarization and consensus. A legislator with high spectral centrality is not necessarily powerful in the conventional sense. They are \textit{structurally load-bearing}: their removal would alter the network's eigen-structure and, with it, the latent coalition possibilities that define what legislation can pass.
+We develop a framework for measuring this structural contribution. Rather than placing legislators on a line, we treat the Member-Vote incidence matrix as a bipartite network and apply \textbf{SVD Incidence Centrality} \citep{franco2026}. The key operation is a $1/\sigma^2$ weighting on singular values that emphasizes low-frequency modes,the Fiedler vector and near-Fiedler modes that encode the global topology of polarization and consensus. A legislator with high spectral centrality is not necessarily powerful in the conventional sense. They are \textit{structurally load-bearing}: their removal would alter the network's eigen-structure and, with it, the latent coalition possibilities that define what legislation can pass.
 
 This distinction between ideological position and structural role is the central contribution. We demonstrate it through three operations: a baseline spectral analysis comparing 116th Congress members, a counterfactual simulator that predicts how the network topology changes when specific members are removed, and a coalition predictor that forecasts Yea-Nay votes from spectral embeddings before they occur.
 
@@ -38,7 +38,7 @@ B_{ij} = \begin{cases}
 \end{cases}
 \end{equation}
 
-For the 116th Congress, this yields a matrix of approximately 440 members by 1,000 votes after filtering for members with at least 50 recorded votes. The matrix is sparse---attendance is rarely perfect---but not pathologically so. The rank is typically within ten of the smaller dimension, indicating that most votes carry non-redundant information about member positions.
+For the 116th Congress, this yields a matrix of approximately 440 members by 1,000 votes after filtering for members with at least 50 recorded votes. The matrix is sparse,attendance is rarely perfect,but not pathologically so. The rank is typically within ten of the smaller dimension, indicating that most votes carry non-redundant information about member positions.
 
 Standard analyses reduce this matrix to distances: agreement scores between members, ideological positions derived from scaling methods. We preserve the full incidence structure and decompose it through Singular Value Decomposition:
 \begin{equation}
@@ -48,7 +48,7 @@ where $r = \text{rank}(\mathbf{B})$, the singular values satisfy $\sigma_1 \geq 
 
 \section{SVD Incidence Centrality}
 
-The innovation of \citet{franco2026} is a weighting scheme that inverts the conventional intuition about which singular values matter. In principal components analysis, one prioritizes large singular values---they capture the most variance. For understanding network topology, the reverse is true: the smallest non-zero singular values encode the structure of cuts, partitions, and near-disconnections that define how a network fractures.
+The innovation of \citet{franco2026} is a weighting scheme that inverts the conventional intuition about which singular values matter. In principal components analysis, one prioritizes large singular values,they capture the most variance. For understanding network topology, the reverse is true: the smallest non-zero singular values encode the structure of cuts, partitions, and near-disconnections that define how a network fractures.
 
 \textbf{Member Spectral Centrality} is defined as:
 \begin{equation}
@@ -64,11 +64,11 @@ C_e(j) = \sum_{k=1}^{r} \frac{V_{jk}^2}{\sigma_k^2 + \epsilon}
 The $1/\sigma^2$ weighting ensures that singular vectors corresponding to smaller singular values contribute disproportionately. In the context of legislative networks, this means:
 
 \begin{itemize}
-    \item \textbf{Large singular values} ($\sigma \approx \sigma_1$): Capture high-variance patterns---party-line votes where nearly all Democrats vote one way and nearly all Republicans the other. These votes are predictable and structurally redundant.
-    \item \textbf{Small singular values} ($\sigma \ll \sigma_1$): Capture low-frequency topological structure---the Fiedler vector encoding the bipartisan partition, near-consensus modes where coalitions cross party lines, and cross-cutting cleavages that don't align with the primary party dimension.
+    \item \textbf{Large singular values} ($\sigma \approx \sigma_1$): Capture high-variance patterns,party-line votes where nearly all Democrats vote one way and nearly all Republicans the other. These votes are predictable and structurally redundant.
+    \item \textbf{Small singular values} ($\sigma \ll \sigma_1$): Capture low-frequency topological structure,the Fiedler vector encoding the bipartisan partition, near-consensus modes where coalitions cross party lines, and cross-cutting cleavages that don't align with the primary party dimension.
 \end{itemize}
 
-A member with high spectral centrality is one whose voting pattern contributes significantly to these low-frequency modes. They are not necessarily moderates. Justin Amash, who left the Republican Party in 2019 to become an independent, had one of the highest centrality scores in the 116th Congress not because he occupied the ideological center but because he voted in ways that were spectrally unique---against his former party and frequently against the Democrats as well, creating eigen-directions that would disappear entirely if removed from the matrix.
+A member with high spectral centrality is one whose voting pattern contributes significantly to these low-frequency modes. They are not necessarily moderates. Justin Amash, who left the Republican Party in 2019 to become an independent, had one of the highest centrality scores in the 116th Congress not because he occupied the ideological center but because he voted in ways that were spectrally unique,against his former party and frequently against the Democrats as well, creating eigen-directions that would disappear entirely if removed from the matrix.
 
 \section{Why This Differs from Existing Methods}
 
@@ -80,7 +80,7 @@ DW-NOMINATE \citep{poole1985, poole2017} performs maximum likelihood estimation 
 \end{equation}
 where $x_i$ is member $i$'s ideological position, $v_j$ is the vote's cutpoint, and $\Phi$ is the logistic CDF. It answers: ``Where does this member sit on the left-right spectrum?''
 
-Spectral Anatomy answers a different question: ``What is this member's contribution to the network's topological structure?'' The distinction matters empirically. Consider Collin Peterson (D-MN), the last conservative Democrat in the House. His DW-NOMINATE score placed him near the Republican center---a moderate by ideological measures. But his spectral centrality was high because he voted with Republicans on key agricultural bills while remaining a Democrat on procedural votes, creating a unique bridge pattern in the network. A moderate Republican with the same DW-NOMINATE score but straight party-line voting would have low spectral centrality.
+Spectral Anatomy answers a different question: ``What is this member's contribution to the network's topological structure?'' The distinction matters empirically. Consider Collin Peterson (D-MN), the last conservative Democrat in the House. His DW-NOMINATE score placed him near the Republican center,a moderate by ideological measures. But his spectral centrality was high because he voted with Republicans on key agricultural bills while remaining a Democrat on procedural votes, creating a unique bridge pattern in the network. A moderate Republican with the same DW-NOMINATE score but straight party-line voting would have low spectral centrality.
 
 \subsection{PageRank and Betweenness}
 
@@ -130,7 +130,7 @@ This score quantifies how much the network topology would shift if member $i$ de
 
 Based on the direction of change, we classify members into structural roles:
 
-\textbf{Bridge Members} ($\Delta \gamma > 0$, $\Delta \alpha < 0$): Removing them increases polarization and decreases connectivity. These members hold the network together---they are cross-party voters or unique outliers whose presence enables coalition formation. When Justin Amash left the Republican Party in 2019, the House co-voting network's spectral gap increased by 0.03, indicating measurably higher polarization in his absence.
+\textbf{Bridge Members} ($\Delta \gamma > 0$, $\Delta \alpha < 0$): Removing them increases polarization and decreases connectivity. These members hold the network together,they are cross-party voters or unique outliers whose presence enables coalition formation. When Justin Amash left the Republican Party in 2019, the House co-voting network's spectral gap increased by 0.03, indicating measurably higher polarization in his absence.
 
 \textbf{Polarizers} ($\Delta \gamma < 0$, $\Delta \alpha > 0$): Removing them decreases polarization and increases connectivity. Their departure makes the House less structurally divided. These members contribute to the partisan divide; without them, the network becomes more cohesive.
 
@@ -146,7 +146,7 @@ Each member $i$ is represented by a $k$-dimensional \textbf{spectral embedding}:
 \begin{equation}
 \mathbf{e}_i = \mathbf{u}_i \odot \sqrt{\mathbf{w}}
 \end{equation}
-where $\mathbf{u}_i$ is the $i$-th row of $\mathbf{U}$ and $\mathbf{w}_k = 1/\sigma_k$ weights by inverse singular value (not squared, to preserve directionality). These embeddings place members in a space where proximity corresponds to spectral similarity---members with similar contributions to low-frequency modes are nearby.
+where $\mathbf{u}_i$ is the $i$-th row of $\mathbf{U}$ and $\mathbf{w}_k = 1/\sigma_k$ weights by inverse singular value (not squared, to preserve directionality). These embeddings place members in a space where proximity corresponds to spectral similarity,members with similar contributions to low-frequency modes are nearby.
 
 Given a bill with features $\mathbf{b}$ (policy area, partisan lean, sponsor, salience), we create a synthetic vote vector and project it into the embedding space. The \textbf{coalition probability} for member $i$ is:
 \begin{equation}
@@ -154,7 +154,7 @@ Given a bill with features $\mathbf{b}$ (policy area, partisan lean, sponsor, sa
 \end{equation}
 where $\text{adjust}(\cdot)$ incorporates party alignment and the cosine similarity captures spectral affinity.
 
-Members with $\mathbb{P}[\text{Yea}] \in [0.35, 0.65]$ are flagged as \textbf{swing votes}---their position in the embedding space places them near the decision boundary. On the March 2023 bill to raise the debt ceiling, this method identified 12 of the 20 Republican holdouts before the vote, including members whose DW-NOMINATE scores gave no indication of defection.
+Members with $\mathbb{P}[\text{Yea}] \in [0.35, 0.65]$ are flagged as \textbf{swing votes},their position in the embedding space places them near the decision boundary. On the March 2023 bill to raise the debt ceiling, this method identified 12 of the 20 Republican holdouts before the vote, including members whose DW-NOMINATE scores gave no indication of defection.
 
 \section{Temporal Extension}
 
@@ -165,17 +165,17 @@ The framework extends naturally across Congresses. For each Congress $t \in \{10
     \item Identify \textbf{spectral regime changes}: sharp increases or decreases in centrality indicating structural shifts
 \end{enumerate}
 
-The \textbf{spectral autocorrelation} $\rho_t = \text{corr}(C_v^{(t)}, C_v^{(t+1)})$ measures stability. Low $\rho_t$ indicates reorganization---a wave election, party switch, or procedural change that reconfigures the network. The 2010 Tea Party wave produced $\rho_{112} = 0.67$, the lowest in our dataset, indicating the 112th Congress represented a structural break rather than continuous evolution.
+The \textbf{spectral autocorrelation} $\rho_t = \text{corr}(C_v^{(t)}, C_v^{(t+1)})$ measures stability. Low $\rho_t$ indicates reorganization,a wave election, party switch, or procedural change that reconfigures the network. The 2010 Tea Party wave produced $\rho_{112} = 0.67$, the lowest in our dataset, indicating the 112th Congress represented a structural break rather than continuous evolution.
 
 \section{Robustness and Validation}
 
 \subsection{Parameter Sensitivity}
 
-We vary the truncation rank $k \in \{10, 25, 50, 100\}$ and verify that centrality rankings are stable (Spearman $\rho > 0.85$ across $k$). The qualitative results---which members are identified as high-centrality---are invariant to $k$ above 25.
+We vary the truncation rank $k \in \{10, 25, 50, 100\}$ and verify that centrality rankings are stable (Spearman $\rho > 0.85$ across $k$). The qualitative results,which members are identified as high-centrality,are invariant to $k$ above 25.
 
 \subsection{Null Model Comparison}
 
-We generate randomized null models by permuting vote labels while preserving participation patterns. Observed centrality scores exceed the 95th percentile of the null distribution for 23\% of members, indicating that structural importance is not random---specific members genuinely occupy load-bearing positions.
+We generate randomized null models by permuting vote labels while preserving participation patterns. Observed centrality scores exceed the 95th percentile of the null distribution for 23\% of members, indicating that structural importance is not random,specific members genuinely occupy load-bearing positions.
 
 \subsection{External Validation}
 
@@ -190,11 +190,11 @@ The correlations are modest but significant: high-centrality members are more li
 
 \section{Summary}
 
-The Spectral Anatomy framework reframes legislative analysis from ideological positioning to topological structure. By emphasizing low-frequency modes through $1/\sigma^2$ weighting, we identify the \textit{load-bearing elements} of congressional networks---the members and votes that define the boundaries of possible coalitions.
+The Spectral Anatomy framework reframes legislative analysis from ideological positioning to topological structure. By emphasizing low-frequency modes through $1/\sigma^2$ weighting, we identify the \textit{load-bearing elements} of congressional networks,the members and votes that define the boundaries of possible coalitions.
 
-Our novel contributions---counterfactual spectral analysis and coalition prediction from embeddings---transform the framework from descriptive to predictive. We can now forecast the structural impact of member turnover, identify swing votes before they occur, and classify legislators by their network role rather than their ideological position.
+Our novel contributions,counterfactual spectral analysis and coalition prediction from embeddings,transform the framework from descriptive to predictive. We can now forecast the structural impact of member turnover, identify swing votes before they occur, and classify legislators by their network role rather than their ideological position.
 
-The empirical question this enables is whether load-bearing members are moderates or extremists. Early results from the 116th Congress suggest the latter: the members with highest structural importance were outliers like Amash and Massie, not centrists like the Problem Solvers Caucus. If this pattern holds across the 1990--2024 period, it challenges the standard political science focus on the center and suggests that the edges---the boundary-definers---are what hold the legislative topology together.
+The empirical question this enables is whether load-bearing members are moderates or extremists. Early results from the 116th Congress suggest the latter: the members with highest structural importance were outliers like Amash and Massie, not centrists like the Problem Solvers Caucus. If this pattern holds across the 1990--2024 period, it challenges the standard political science focus on the center and suggests that the edges,the boundary-definers,are what hold the legislative topology together.
 
 \bibliographystyle{plainnat}
 \begin{thebibliography}{10}
