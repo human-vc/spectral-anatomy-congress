@@ -1,0 +1,261 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm,algpseudocode}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{caption}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+\title{Spectral Anatomy of Legislative Networks: Methodology}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Mathematical Framework}
+
+\subsection{Notation and Preliminaries}
+
+Let $\mathcal{L}$ denote a legislature with $m$ members voting on $n$ distinct roll-call votes during a congressional session. We construct the \textbf{member-vote incidence matrix} $\mathbf{B} \in \{-1, 0, +1\}^{m \times n}$ where:
+\begin{equation}
+B_{ij} = \begin{cases}
++1 & \text{if member } i \text{ votes Yea on vote } j \\
+-1 & \text{if member } i \text{ votes Nay on vote } j \\
+0 & \text{if member } i \text{ is absent or abstains on vote } j
+\end{cases}
+\end{equation}
+
+Without loss of generality, we assume $m \leq n$ (typically $m \approx 440$ for the House, $n \approx 500$--$1000$ votes per session).
+
+\subsection{Singular Value Decomposition}
+
+The spectral anatomy framework relies on the \textbf{Singular Value Decomposition} (SVD) of $\mathbf{B}$:
+\begin{equation}
+\mathbf{B} = \mathbf{U} \mathbf{\Sigma} \mathbf{V}^\top = \sum_{k=1}^{r} \sigma_k \mathbf{u}_k \mathbf{v}_k^\top
+\end{equation}
+where $r = \text{rank}(\mathbf{B}) \leq \min(m,n)$, $\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_r > 0$ are the singular values, and $\mathbf{U} \in \mathbb{R}^{m \times r}$, $\mathbf{V} \in \mathbb{R}^{n \times r}$ contain the left and right singular vectors respectively.
+
+\subsection{SVD Incidence Centrality}
+
+Following Franco et al. (2026), we define the \textbf{SVD Incidence Centrality} for members and votes as:
+
+\begin{definition}[Member Spectral Centrality]
+The spectral centrality of member $i$ is:
+\begin{equation}
+C_v(i) = \sum_{k=1}^{r} \frac{U_{ik}^2}{\sigma_k^2}
+\end{equation}
+\end{definition}
+
+\begin{definition}[Vote Spectral Centrality]
+The spectral centrality of vote $j$ is:
+\begin{equation}
+C_e(j) = \sum_{k=1}^{r} \frac{V_{jk}^2}{\sigma_k^2}
+\end{equation}
+\end{definition}
+
+\section{Theoretical Justification}
+
+\subsection{The $1/\sigma^2$ Weighting}
+
+The crucial innovation of SVD Incidence Centrality is the inverse-square weighting of singular values. This weighting scheme reflects the \textbf{spectral contribution} of each mode to the network topology:
+
+\begin{proposition}[Low-Frequency Emphasis]
+The $1/\sigma_k^2$ weighting ensures that singular vectors corresponding to smaller singular values (near-zero modes) contribute disproportionately to centrality scores.
+\end{proposition}
+
+\textbf{Interpretation:} In the context of legislative networks:
+\begin{itemize}
+    \item \textbf{Large singular values} ($\sigma \approx \sigma_1$): Capture high-variance patterns (party-line votes, popular bipartisan legislation)
+    \item \textbf{Small singular values} ($\sigma \ll \sigma_1$): Capture low-frequency topological structure (Fiedler vector, near-consensus modes, cross-cutting cleavages)
+\end{itemize}
+
+The Fiedler vector (second smallest singular value mode) specifically encodes the \textbf{bipartisan partition} of Congress. By emphasizing $1/\sigma^2$, we prioritize members and votes that define the \textit{boundaries} of the legislative space rather than its \textit{center of mass}.
+
+\subsection{Connection to Effective Resistance}
+
+SVD Incidence Centrality is mathematically equivalent to effective resistance in the graph Laplacian framework. For the incidence matrix $\mathbf{B}$, the pseudoinverse $\mathbf{L}^\dagger = (\mathbf{B}\mathbf{B}^\top)^\dagger$ relates to centrality via:
+\begin{equation}
+C_v(i) \propto [\mathbf{L}^\dagger]_{ii}
+\end{equation}
+This reveals that high-centrality members are those that, if removed, would most increase the "effective resistance" (structural rigidity) of the voting network.
+
+\section{Comparison to Existing Methods}
+
+\subsection{DW-NOMINATE}
+
+DW-NOMINATE (Poole \& Rosenthal) performs ideal point estimation via maximum likelihood:
+\begin{itemize}
+    \item \textbf{Output:} Ideological position $x_i \in \mathbb{R}^d$ for each member
+    \item \textbf{Assumption:} Voting is driven by spatial utility maximization
+    \item \textbf{Limitation:} Captures ideology, not structural role
+\end{itemize}
+
+\textbf{Key Difference:} DW-NOMINATE asks ``Where does this member sit on the left-right spectrum?'' Spectral Anatomy asks ``What is this member's contribution to the network's topological structure?''
+
+Empirically, we expect weak correlation: a moderate member (center of DW-NOMINATE) may have low spectral centrality if they vote predictably with their party.
+
+\subsection{PageRank Centrality}
+
+PageRank models a random walk on the member similarity graph:
+\begin{equation}
+\pi = \alpha \mathbf{P}\pi + (1-\alpha)\mathbf{v}
+\end{equation}
+
+\textbf{Key Difference:} PageRank measures \textit{popularity} (who votes similarly to many others). Spectral centrality measures \textit{structural uniqueness} (who defines the network's eigen-directions).
+
+\subsection{Betweenness Centrality}
+
+Betweenness counts shortest paths passing through a node:
+\begin{equation}
+C_B(i) = \sum_{s \neq i \neq t} \frac{\sigma_{st}(i)}{\sigma_{st}}
+\end{equation}
+
+\textbf{Key Difference:} Betweenness requires discrete ``paths'' in a binary graph. SVD Incidence Centrality operates directly on the incidence structure without thresholding, preserving continuous voting similarities.
+
+\section{Algorithmic Implementation}
+
+\begin{algorithm}[H]
+\caption{Compute Spectral Anatomy}
+\begin{algorithmic}[1]
+\Require Roll-call vote matrix $\mathbf{B} \in \{-1,0,+1\}^{m \times n}$, rank $k$
+\Ensure Member centralities $C_v \in \mathbb{R}^m$, vote centralities $C_e \in \mathbb{R}^n$
+\State Filter: Remove members with $<50$ votes, votes with $<10\%$ participation
+\State Center: $\mathbf{B} \leftarrow \mathbf{B} - \text{mean}(\mathbf{B})$ \Comment{Optional: remove unanimous baseline}
+\State Compute truncated SVD: $[\mathbf{U}, \mathbf{\Sigma}, \mathbf{V}] = \text{SVD}(\mathbf{B}, k)$
+\State Sort: Ensure $\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_k$
+\State Compute weights: $w_k = 1/\sigma_k^2$
+\State Member centrality: $C_v(i) = \sum_{k} U_{ik}^2 \cdot w_k$
+\State Vote centrality: $C_e(j) = \sum_{k} V_{jk}^2 \cdot w_k$
+\State \textbf{return} $C_v$, $C_e$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Computational Complexity}
+
+\begin{itemize}
+    \item \textbf{SVD computation:} $O(\min(mn^2, m^2n))$ for full decomposition
+    \item \textbf{Truncated SVD (k components):} $O(mnk)$ using randomized methods
+    \item \textbf{Memory:} $O(mn)$ for dense matrix, $O(\text{nnz})$ for sparse representation
+    \item \textbf{Practical:} For $m=440, n=1000, k=50$: $<1$ second on standard hardware
+\end{itemize}
+
+\section{Temporal Extension Methodology}
+
+To analyze the evolution of spectral structure across Congresses (1990--2024):
+
+\subsection{Sliding Window Analysis}
+
+For each Congress $t \in \{101, 102, \dots, 118\}$:
+\begin{enumerate}
+    \item Compute $\mathbf{B}^{(t)}$, $C_v^{(t)}$, $C_e^{(t)}$
+    \item Track member $i$'s trajectory: $\{C_v^{(t)}(i)\}_{t}$ for members serving multiple terms
+    \item Identify \textbf{spectral regime changes}: sharp increases/decreases in centrality
+\end{enumerate}
+
+\subsection{Cross-Congress Stability}
+
+Compute the \textbf{spectral autocorrelation}:
+\begin{equation}
+\rho_t = \text{corr}\left(C_v^{(t)}, C_v^{(t+1)}\right)
+\end{equation}
+Low $\rho_t$ indicates structural reorganization (e.g., after wave elections, party switches).
+
+\section{Hub/Authority Decomposition}
+
+We extend the framework to differentiate two structural roles:
+
+\subsection{Agenda Setters (Hubs)}
+
+Members who vote on disproportionately \textit{consequential} votes (high-centrality votes):
+\begin{equation}
+H_i = \sum_{j} |B_{ij}| \cdot C_e(j)
+\end{equation}
+
+\subsection{Consensus Builders (Authorities)}
+
+Members whose voting patterns are \textit{uniquely informative} about the network structure:
+\begin{equation}
+A_i = C_v(i) \cdot \text{var}_{j}(B_{ij})
+\end{equation}
+
+High $A_i$ indicates a member whose votes span multiple ideological dimensions (not predictable from party alone).
+
+\section{Robustness and Validation}
+
+\subsection{Sensitivity Analysis}
+
+\begin{enumerate}
+    \item \textbf{Truncation rank $k$}: Vary $k \in \{10, 25, 50, 100\}$; verify centrality rankings are stable
+    \item \textbf{Vote threshold}: Vary minimum participation threshold (30, 50, 100 votes)
+    \item \textbf{Party switches}: Exclude members who switch parties mid-session
+\end{enumerate}
+
+\subsection{Null Model Comparison}
+
+Generate randomized null models:
+\begin{enumerate}
+    \item \textbf{Permutation null}: Shuffle vote labels, preserving participation patterns
+    \item \textbf{Configuration model}: Preserve row/column marginals of $\mathbf{B}$
+    \item Compare observed centrality distribution to null distribution
+\end{enumerate}
+
+\subsection{External Validation}
+
+Correlate spectral centrality with:
+\begin{itemize}
+    \item Committee assignments (leadership positions)
+    \item Legislative effectiveness scores (Volden \& Wiseman)
+    \item Media coverage (GDELT database)
+    \item Campaign contributions (OpenSecrets)
+\end{itemize}
+
+\section{Interpretation Framework}
+
+\subsection{What High Centrality Means}
+
+Unlike DW-NOMINATE's ideological center, spectral centrality identifies members who are \textbf{structurally load-bearing}:
+
+\begin{itemize}
+    \item \textbf{Bridge members:} Vote across party lines on defining votes (e.g., Peterson)
+    \item \textbf{Boundary definers:} Occupy extreme positions that define the spectrum (e.g., Amash, Massie)
+    \item \textbf{Coalition kingmakers:} Vote with unique combinations of allies (e.g., Gaetz on McCarthy votes)
+\end{itemize}
+
+\subsection{What High-Centrality Votes Mean}
+
+\begin{itemize}
+    \item \textbf{Party-defining votes:} Close partisan divisions that reveal party alignment
+    \item \textbf{Coalition-fracturing votes:} Issues that split expected alliances
+    \item \textbf{Outlier-revealing votes:} Lopsided votes where few dissenters have high leverage
+\end{itemize}
+
+\section{Visualization Methodology}
+
+\subsection{Spectral Embedding}
+
+Project members into 2D using the top two singular vectors:
+\begin{equation}
+\mathbf{x}_i = (U_{i1}, U_{i2})
+\end{equation}
+Color by party, size by $C_v(i)$.
+
+\subsection{Temporal Heatmaps}
+
+For each Congress, generate heatmaps of:
+\begin{itemize}
+    \item Member centrality rankings (top 20)
+    \item Vote centrality by policy area (using Voteview.com codes)
+    \item Correlation between $C_v$ and DW-NOMINATE first dimension
+\end{itemize}
+
+\section{Summary}
+
+The Spectral Anatomy framework provides a complementary lens to existing political science methods. By emphasizing low-frequency structural modes through $1/\sigma^2$ weighting, we identify the \textbf{load-bearing elements} of legislative networks---the members and votes that, if altered, would most reshape the topology of congressional politics.
+
+The methodology is computationally efficient ($O(mnk)$), robust to parameter choices, and extensible across time and institutional contexts. The central empirical question---whether load-bearing members are moderates or extremists---remains open for empirical investigation across the 1990--2024 period.
+
+\end{document}
