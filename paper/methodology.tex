@@ -256,11 +256,75 @@ For each Congress, generate heatmaps of:
     \item Correlation between $C_v$ and DW-NOMINATE first dimension
 \end{itemize}
 
+\section{Novel Contributions}
+
+\subsection{Counterfactual Spectral Analysis}
+
+We introduce \textbf{leave-one-out spectral analysis} to quantify each member's structural contribution to the legislative network. By systematically removing each member $i$ and recomputing spectral properties, we define the \textbf{structural importance score}:
+
+\begin{equation}
+\mathcal{I}(i) = \frac{1}{3} \left( \frac{|\Delta \gamma|}{\gamma_0} + \frac{|\Delta \alpha|}{\alpha_0} + \frac{|\Delta r_{\text{eff}}|}{r_0} \right)
+\end{equation}
+where $\Delta \gamma$ is the change in spectral gap, $\Delta \alpha$ is the change in algebraic connectivity, and $\Delta r_{\text{eff}}$ is the change in effective rank.
+
+This enables:
+\begin{itemize}
+    \item \textbf{Predicting special election impacts}: Quantify how a member's departure affects network topology
+    \item \textbf{Redistricting analysis}: Simulate the structural impact of replacing representatives
+    \item \textbf{Strategic retirement analysis}: Identify when member departure would maximally disrupt the network
+\end{itemize}
+
+\subsection{Spectral Coalition Prediction}
+
+We develop a method to predict coalition formation on upcoming votes using \textbf{spectral embeddings}. Each member $i$ is represented by a $k$-dimensional embedding:
+
+\begin{equation}
+\mathbf{e}_i = \mathbf{u}_i \odot \sqrt{\mathbf{w}}
+\end{equation}
+where $\mathbf{u}_i$ is the $i$-th row of $\mathbf{U}$ and $\mathbf{w}_k = 1/\sigma_k$ emphasizes structural modes.
+
+For a bill with features $\mathbf{b}$ (policy area, partisan lean, salience), we predict coalition membership via cosine similarity in embedding space:
+
+\begin{equation}
+\mathbb{P}[\text{Yea}_i] = \frac{1 + \cos(\mathbf{e}_i, \mathbf{e}_{\text{bill}})}{2} \times \text{adjustment}(\text{party}_i, \mathbf{b})
+\end{equation}
+
+This is distinct from existing approaches:
+\begin{itemize}
+    \item \textbf{IDEAL}: Predicts based on spatial utility (requires knowing bill's policy location)
+    \item \textbf{Our method}: Predicts based on spectral similarity (captures latent coalition structures)
+\end{itemize}
+
+\subsection{Network Role Taxonomy}
+
+Based on counterfactual analysis, we classify members into structural roles:
+
+\begin{definition}[Bridge Member]
+A member where $\Delta \gamma > 0$ and $\Delta \alpha < 0$ upon removal. Their departure \textit{increases} polarization.
+\end{definition}
+
+\begin{definition}[Polarizer]
+A member where $\Delta \gamma < 0$ and $\Delta \alpha > 0$ upon removal. Their departure \textit{decreases} polarization.
+\end{definition}
+
+\begin{definition}[Redundant Member]
+A member where $|\Delta \gamma| < \epsilon$ and $|\Delta \alpha| < \epsilon$. The network is structurally invariant to their presence.
+\end{definition}
+
+This taxonomy is \textbf{predictive}, not merely descriptive: bridge members are targets for lobbying, redundant members can be replaced without consequence.
+
 \section{Summary}
 
 The Spectral Anatomy framework provides a complementary lens to existing political science methods. By emphasizing low-frequency structural modes through $1/\sigma^2$ weighting, we identify the \textbf{load-bearing elements} of legislative networks---the members and votes that, if altered, would most reshape the topology of congressional politics.
 
-The methodology is computationally efficient ($O(mnk)$), robust to parameter choices, and extensible across time and institutional contexts. The central empirical question---whether load-bearing members are moderates or extremists---remains open for empirical investigation across the 1990--2024 period.
+Our \textbf{novel contributions}---counterfactual spectral analysis and spectral coalition prediction---transform the framework from descriptive to \textbf{predictive}. We can now:
+\begin{enumerate}
+    \item Predict the structural impact of member turnover
+    \item Forecast coalition formation before votes occur
+    \item Identify optimal targets for legislative strategy
+\end{enumerate}
+
+The methodology is computationally efficient ($O(mnk)$), robust to parameter choices, and extensible across time and institutional contexts. The central empirical question---whether load-bearing members are moderates or extremists---can now be addressed through counterfactual simulation across the 1990--2024 period.
 
 \bibliographystyle{plainnat}
 \begin{thebibliography}{10}
