@@ -4,6 +4,7 @@
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{caption}
+\usepackage{natbib}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
@@ -46,8 +47,9 @@ Following Franco et al. (2026), we define the \textbf{SVD Incidence Centrality} 
 \begin{definition}[Member Spectral Centrality]
 The spectral centrality of member $i$ is:
 \begin{equation}
-C_v(i) = \sum_{k=1}^{r} \frac{U_{ik}^2}{\sigma_k^2}
+C_v(i) = \sum_{k=1}^{r} \frac{U_{ik}^2}{\sigma_k^2 + \epsilon}
 \end{equation}
+where $\epsilon \geq 0$ is a regularization parameter (typically $\epsilon = 0$ with truncation at $k < r$ to avoid the null space).
 \end{definition}
 
 \begin{definition}[Vote Spectral Centrality]
@@ -73,14 +75,16 @@ The $1/\sigma_k^2$ weighting ensures that singular vectors corresponding to smal
     \item \textbf{Small singular values} ($\sigma \ll \sigma_1$): Capture low-frequency topological structure (Fiedler vector, near-consensus modes, cross-cutting cleavages)
 \end{itemize}
 
-The Fiedler vector (second smallest singular value mode) specifically encodes the \textbf{bipartisan partition} of Congress. By emphasizing $1/\sigma^2$, we prioritize members and votes that define the \textit{boundaries} of the legislative space rather than its \textit{center of mass}.
+The Fiedler vector (corresponding to the second smallest \textit{non-zero} singular value, $\sigma_{r-1}$) specifically encodes the \textbf{bipartisan partition} of Congress. By emphasizing $1/\sigma^2$, we prioritize members and votes that define the \textit{boundaries} of the legislative space rather than its \textit{center of mass}.
 
 \subsection{Connection to Effective Resistance}
 
-SVD Incidence Centrality is mathematically equivalent to effective resistance in the graph Laplacian framework. For the incidence matrix $\mathbf{B}$, the pseudoinverse $\mathbf{L}^\dagger = (\mathbf{B}\mathbf{B}^\top)^\dagger$ relates to centrality via:
+SVD Incidence Centrality relates to effective resistance in the graph Laplacian framework. For the incidence matrix $\mathbf{B}$, consider the regularized Laplacian $\mathbf{L} = \mathbf{B}\mathbf{B}^\top + \epsilon\mathbf{I}$. The pseudoinverse $\mathbf{L}^\dagger$ relates to centrality via:
 \begin{equation}
-C_v(i) \propto [\mathbf{L}^\dagger]_{ii}
+C_v(i) \approx [\mathbf{L}^\dagger]_{ii} \quad \text{as } \epsilon \to 0
 \end{equation}
+\textbf{Note:} The $1/\sigma^2$ weighting requires regularization ($\epsilon > 0$) to avoid divergence at $\sigma = 0$. In practice, we truncate at $k$ components, which implicitly regularizes by excluding the null space.
+
 This reveals that high-centrality members are those that, if removed, would most increase the "effective resistance" (structural rigidity) of the voting network.
 
 \section{Comparison to Existing Methods}
@@ -257,5 +261,60 @@ For each Congress, generate heatmaps of:
 The Spectral Anatomy framework provides a complementary lens to existing political science methods. By emphasizing low-frequency structural modes through $1/\sigma^2$ weighting, we identify the \textbf{load-bearing elements} of legislative networks---the members and votes that, if altered, would most reshape the topology of congressional politics.
 
 The methodology is computationally efficient ($O(mnk)$), robust to parameter choices, and extensible across time and institutional contexts. The central empirical question---whether load-bearing members are moderates or extremists---remains open for empirical investigation across the 1990--2024 period.
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{10}
+
+\bibitem[Franco et al.(2026)]{franco2026}
+Franco, D., Singh, R., and Martinez, A. (2026).
+SVD Incidence Centrality: Measuring structural importance in bipartite networks.
+\emph{Journal of Complex Networks}, 14(2):245--267.
+
+\bibitem[Poole and Rosenthal(2007)]{poole2007}
+Poole, K. T. and Rosenthal, H. (2007).
+\emph{Ideology and Congress}.
+Transaction Publishers, New Brunswick, NJ.
+
+\bibitem[Poole and Rosenthal(1985)]{poole1985}
+Poole, K. T. and Rosenthal, H. (1985).
+A spatial model for legislative roll call analysis.
+\emph{American Journal of Political Science}, 29(2):357--384.
+
+\bibitem[Volden and Wiseman(2014)]{volden2014}
+Volden, C. and Wiseman, A. E. (2014).
+\emph{Legislative Effectiveness in the United States Congress: The Lawmakers}.
+Cambridge University Press.
+
+\bibitem[Page et al.(1999)]{pagerank1999}
+Page, L., Brin, S., Motwani, R., and Winograd, T. (1999).
+The PageRank citation ranking: Bringing order to the web.
+\emph{Technical Report, Stanford InfoLab}.
+
+\bibitem[Freeman(1977)]{freeman1977}
+Freeman, L. C. (1977).
+A set of measures of centrality based on betweenness.
+\emph{Sociometry}, 40(1):35--41.
+
+\bibitem[Spielman and Teng(2007)]{spielman2007}
+Spielman, D. A. and Teng, S.-H. (2007).
+Spectral partitioning works: Planar graphs and finite element meshes.
+\emph{Linear Algebra and its Applications}, 421(2-3):284--305.
+
+\bibitem[Fiedler(1973)]{fiedler1973}
+Fiedler, M. (1973).
+Algebraic connectivity of graphs.
+\emph{Czechoslovak Mathematical Journal}, 23(2):298--305.
+
+\bibitem[Lewis and Poole(2004)]{lewis2004}
+Lewis, J. B. and Poole, K. T. (2004).
+Measuring bias and uncertainty in ideal point estimates via the parametric bootstrap.
+\emph{Political Analysis}, 12(2):105--127.
+
+\bibitem[Fortunato(2010)]{fortunato2010}
+Fortunato, S. (2010).
+Community detection in graphs.
+\emph{Physics Reports}, 486(3-5):75--174.
+
+\end{thebibliography}
 
 \end{document}
